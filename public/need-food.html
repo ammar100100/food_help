@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أحتاج طعام</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<header>
+    <div class="header-container">
+        <h3>الطعام المتوفر</h3>
+        <div class="nav-buttons">
+            <a href="/" class="btn">العودة للصفحة الرئيسية</a>
+            <a href="#foodForm" class="btn">الذهاب إلى النموذج</a>
+        </div>
+    </div>
+</header>
+
+<body>
+    <div class="container">
+        <div id="foodPosts"></div>
+    </div>
+    <script>
+        const loadFood = async () => {
+            const response = await fetch('/get-food');
+            const foods = await response.json();
+
+            const foodPosts = document.getElementById('foodPosts');
+            foodPosts.innerHTML = foods.map(food => `
+                <div class="food-post">
+                    <img src="${food.photo}" alt="${food.name}">
+                    <h3>${food.name}</h3>
+                    <p>${food.location}</p>
+                    <p>رقم التواصل: ${food.contact}</p>
+                    <!-- Display link to open in Google Maps -->
+                    <a href="${food.location}" target="_blank">--------------------اضغط هنا -لفتح العنوان----------------</a>
+                </div>
+            `).join('');
+        };
+
+        loadFood();
+    </script>
+</body>
+</html>

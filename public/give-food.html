@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعطاء طعام</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <h1>إضافه طعام</h1>
+            <div class="nav-buttons">
+                <a href="/" class="btn">العودة للصفحة الرئيسية</a>
+                <a href="#foodForm" class="btn">الذهاب إلى النموذج</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Food Donation Form -->
+        <div class="form-container">
+            <h2>إضافة طعام</h2>
+            <form id="foodForm" enctype="multipart/form-data">
+                <label>اسم الطعام:</label>
+                <input type="text" name="name" required placeholder="أدخل اسم الطعام">
+                
+                <label>رقم التواصل:</label>
+                <input type="text" name="contact" required placeholder="أدخل رقم التواصل">
+                
+                <label>الموقع:</label>
+                <input type="text" name="location" id="location" required placeholder="الموقع الحالي سيتم تحديده تلقائيًا">
+                
+                <label>الصورة:</label>
+                <input type="file" name="photo" accept="image/*" required>
+                
+                <button type="submit">إضافة</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <script>
+        const foodForm = document.getElementById('foodForm');
+        const locationInput = document.getElementById('location');
+
+        foodForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // الحصول على الموقع تلقائيًا
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const { latitude, longitude } = position.coords;
+
+                        // إنشاء رابط لخرائط جوجل
+                        const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                        locationInput.value = googleMapsLink;
+
+                        // إرسال البيانات بعد الحصول على الموقع
+                        const formData = new FormData(foodForm);
+
+                        try {
+                            const response = await fetch('/add-food', { method: 'POST', body: formData });
+                            const result = await response.json();
+                            alert(result.message);
+                            foodForm.reset();
+                        } catch (error) {
+                            alert('فشل في إضافة الطعام. حاول مرة أخرى.');
+                        }
+                    },
+                    (error) => {
+                        alert('لم يتمكن المتصفح من جلب الموقع. الرجاء السماح بالوصول إلى الموقع.');
+                    }
+                );
+            } else {
+                alert('المتصفح الخاص بك لا يدعم تحديد الموقع.');
+            }
+        });
+    </script>
+</body>
+</html>
